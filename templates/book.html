@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Home page
+{% endblock%}
+
+
+
+{% block heading %}
+Home page
+{% endblock %}
+
+
+{% block body %}
+{% for rating in ratings['books'] %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/book.css') }}">
+
+<div id="wrapper">
+
+  <div id="container">
+    <div id="img-wrap">
+
+      <ul class="images">
+        <li class="big-img">
+          <img src="http://covers.openlibrary.org/b/ISBN/{{ rating.isbn }}-L.jpg"/>
+        </li>
+
+
+      </ul>
+
+<div class="stars">
+       {% for n in range(rating.average_rating|int) %}
+  <i class="fas fa-star"></i>
+          {% endfor %}
+</div>
+
+    </div>
+
+    <div class="info">
+
+      <h1 style="margin-bottom: -20px;">{{ data.title }}</h1>
+      <p></p><h2>{{ data.author }}</h2>
+
+      <p>Publication year : {{ data.year }}</p>
+      <p>ISBN number : {{ data.isbn }} / {{ rating.isbn13 }}</p>
+      <p>Average rating : {{ rating.average_rating }}</p>
+      <p>Rating Count : {{ rating.ratings_count }}</p>
+
+
+
+      <div class="form">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
+          Check user reviews
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="text-align: right;width: 3%;font-size: 30px;font-weight: bolder;margin-top: -25px;">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                {% for rate in reviews %}
+                <p>Username : {{ rate.username}} | Rating : {{ rate.rating}} </p>
+                <p>Review : {{ rate.review }}</p><hr>
+                {% endfor %}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+      </div>
+      {% if review.review|length: %}
+    <div style="margin-top:25%;">Thank you for reviewing this book :
+      <p>Your rating : {{review.rating}}</p>
+      <p>Your review :{{review.review}}</p></div>
+      {% else: %}
+      <form class="" action="{{ url_for('rate') }}" method="post">
+        <table style="width:100%">
+          <tr>
+            Rating :
+          </tr>
+          <tr>
+            <input type="hidden" name="isbn" value="{{ data.isbn }}">
+            <td>1<br><input type="radio" name="rating" value="1" selected></td>
+            <td>2<br><input type="radio" name="rating" value="2"></td>
+            <td>3<br><input type="radio" name="rating" value="3"></td>
+            <td>4<br><input type="radio" name="rating" value="4"></td>
+            <td>5<br><input type="radio" name="rating" value="5"></td>
+          </tr>
+          <tr>
+          <td colspan="5"><label for="">Review :</label><br><input style="width:100%" type="text" name="review" value=""></td>
+          </tr>
+        </table>
+
+
+        <button>Add your review</button>
+      </form>
+      {% endif %}
+
+    </div>
+    <span class="" style="position:relative;top: 50px;font-size: 25px;color: rgb(200, 43, 0);">
+    <a href="{{ url_for('index') }}"><i class="fas fa-arrow-left"></i> Back to home page</a>
+    </span>
+
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Home page
+{% endblock%}
+
+
+{% block heading %}
+Home page
+{% endblock %}
+
+
+{% block body %}
+<body>
+
+<div class="container">
+   <br />
+   <br />
+   <br />
+   <div class="form-group">
+    <div class="input-group">
+     <span class="input-group-addon">Search</span>
+     <input type="text" name="search_text" id="search_text" placeholder="Search by Book title,ISBN or author name" class="form-control" />
+    </div>
+   </div>
+   <br />
+
+
+
+   <div class="firmalar">
+       <div class="container">
+           <div class="row">
+               <div class="col-md-2"></div>
+               <div class="col-md-8">
+
+   <div id="result"></div>
+
+
+              </div>
+             <div class="col-md-2"></div>
+         </div>
+     </div>
+     </div>
+     <div class="row">
+       <h2>Recommended Books</h2>
+            {% for data in datas %}
+            <div class="col-md-3" style="border:1px solid #000; padding:10px;text-align:center"><a href='book/{{ data.isbn }}'><p>{{data.title}}</p><img src="http://covers.openlibrary.org/b/ISBN/{{data.isbn}}-M.jpg" height="350px" style="max-width:200px" alt=""></a></div>
+            {% endfor %}
+
+           </div>
+
+  </div>
+  <div style="clear:both"></div>
+  <br />
+
+<script>
+$(document).ready(function(){
+
+ load_data();
+
+ function load_data(query)
+ {
+  $.ajax({
+   url:"search",
+   method:"POST",
+   data:{query:query},
+   dataType: "json",
+   success:function(data){
+     var res = "";
+							// create the html with results
+							for(i in data.results){
+								res += "<div class='firma-card row'><div class='col-md-5 img-padding-no' style='min-height:500px'><div class='firma-resim' style='background-image:url(http://covers.openlibrary.org/b/ISBN/"+data.results[i].isbn+"-M.jpg)'><a href='#'></a></div></div><div class='col-md-7'><div class='firma-aciklama card-body'><a href='book/"+data.results[i].isbn+"'><h4>"+data.results[i].title+"<hr></h4></a><ul class='yacht-info__list space-2'><li><span class='vertical-align-mid'>Author : "+data.results[i].author+"</span></li><li><span class='vertical-align-mid'>ISBN :"+data.results[i].isbn+"</span></li></ul></div></div></div>";
+							}
+							$("#result").html(res);
+    // $('#result').html(data);
+   }
+ });
+
+
+ }
+
+ $('#search_text').keyup(function(){
+  var search = $(this).val();
+  if(search != '')
+  {
+   load_data(search);
+  }
+  else
+  {
+   load_data();
+  }
+ });
+
+
+
+
+});
+
+
+</script>
+
+{% endblock %}
