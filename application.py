@@ -130,8 +130,11 @@ def register():
             if existence is None:
                 password = hashlib.md5(password.encode()).hexdigest()
                 db.execute("INSERT INTO users (fullname, username, password) VALUES (:fullname, :username, :password)", {"fullname": fullname, "username": username, "password": password})
+                userid = db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).fetchone()
                 db.commit()
-                error = "inserted succefully"
+                session['logged_in'] = True
+                session['username'] = username
+                session['userid'] = userid.id
             else:
                 error = "A user with same username already exist"
     if not session.get('logged_in'):
