@@ -41,7 +41,7 @@ def book(isbn):
         userid = session['userid']
         review = db.execute("SELECT * FROM review WHERE isbn=:isbn AND userid=:userid", {"isbn": isbn, "userid": userid}).fetchone()
         reviews = db.execute("SELECT * FROM review INNER JOIN users ON review.userid = users.id WHERE isbn=:isbn", {"isbn": isbn}).fetchall()
-        res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "A22EOp7E8d1c4Y1WqJM3Tg", "isbns": isbn})
+        res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "XjytnMTBuDsGMM2lWu33w", "isbns": isbn})
         ratings = json.dumps(res.json())
         ratings = json.loads(ratings)
         return render_template('book.html', ratings=ratings, data=data, userid=session['userid'], review=review, reviews=reviews)
@@ -53,15 +53,14 @@ def api(isbn):
         return redirect(url_for('login'))
     else:
         data = db.execute("SELECT * FROM books WHERE isbn=:isbn", {"isbn": isbn}).fetchone()
-        res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "A22EOp7E8d1c4Y1WqJM3Tg", "isbns": isbn})
+        res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "XjytnMTBuDsGMM2lWu33w", "isbns": isbn})
         ratings = json.dumps(res.json())
         if data is None:
             return render_template("error.html", message="The ISBN you have entred is wrong, try again..")
         else:
             ratings = json.loads(ratings)
-            for rating in ratings['books']:
-                review_count = rating['reviews_count']
-                average_score = rating['average_rating']
+            review_count = ratingcount['books']['reviews_count']
+            average_score = ratingcount['books']['average_rating']
 
             return jsonify(title=data.title, author=data.author, year=data.year, isbn=data.isbn,review_count=review_count,average_score=average_score)
 
@@ -86,7 +85,7 @@ def search():
     if request.method == "POST":
         text = request.form.get("query")
         if text:
-            data = db.execute("SELECT * FROM books WHERE LOWER(isbn) LIKE LOWER('%"+text+"%') OR LOWER(title) LIKE LOWER('%"+text+"%') OR LOWER(author) LIKE LOWER('%"+text+"%')").fetchall()
+            data = db.execute("SELECT * FROM books WHERE LOWER(isbn) LIKE LOWER('%"+text+"%') OR LOWER(title) LIKE LOWER('%"+text+"%') OR LOWER(author) LIKE LOWER('%"+text+"%') LIMIT 10").fetchall()
         else:
             data=""
         return json.dumps({"results": [dict(row) for row in data]})
